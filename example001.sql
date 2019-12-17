@@ -56,7 +56,7 @@ SELECT first_name || ' ' || last_name || chr(13) || chr(10) || job_id
 FROM employees
 WHERE department_id = '30';
 --문제15) EMPLOYEES 테이블에서 현재까지 근무일 수가 몇주 몇일 인가를 출 력하여라. 단 근무 일수가 많은 사람 순으로 출력하여라. 
-SELECT ROUND(MONTHS_BETWEEN(SYSDATE, hire_date)/12*365/7, 0)"주", ROUND(MOD( MONTHS_BETWEEN(SYSDATE, hire_date)/12*365/54, 7), 0)+1"일", hire_date
+SELECT first_name || ' ' || last_name"이름" , ROUND(MONTHS_BETWEEN(SYSDATE, hire_date)/12*365/7, 0)"주", ROUND(MOD( MONTHS_BETWEEN(SYSDATE, hire_date)/12*365/54, 7), 0)+1"일", hire_date"입사날짜"
 FROM employees
 ORDER BY hire_date;
 --문제16) EMPLOYEES 테이블에서 부서 50에서 급여 앞에 $를 삽입하고 3자리 마다 ,를 출력하라 
@@ -72,28 +72,40 @@ FROM employees
 GROUP BY job_id
 HAVING job_id ='SA_MAN';
 --문제19) EMPLOYEES 테이블에 등록되어 있는 인원수, 보너스가 NULL이 아닌 인원수, 보너스의 평균, 등록되어 있는 부서의 수를 구하여 출력하라. 
-SELECT COUNT(*)"사원 수", COUNT(commission_pct)"보너스를 받는 인원", ROUND(SUM(salary*NVL(commission_pct, 0))/COUNT(*), 0)"보너스 평균", COUNT(DISTINCT(department_id))"부서의 수"
-FROM employees;
+SELECT COUNT(*)"사원 수", COUNT(commission_pct)"보너스를 받는 인원", ROUND(SUM(salary*NVL(commission_pct, 0))/COUNT(*), 0)"보너스 평균", TRUNC(AVG(commission_pct * salary))"보너스를 받을 수 있는", COUNT(DISTINCT(department_id))"부서의 수"
+FROM employees; -- 보너스를 받을 수 있는 사람의 보너스 평균을 구하려면 commission 탭에 null값을 0으로 초기화 하지 않고 계산하는것이 맞다. 
 --문제20) EMPLOYEES 테이블에서 부서별로 인원수, 평균 급여, 최저급여, 최고 급여, 급여의 합을 구하여 출력하라. 
-SELECT department_id, COUNT(department_id)"부서 인원", ROUND(AVG(salary),0)"평균 급여", MAX(salary)"부서 최고 급여", SUM(salary)"부서 급여 합계"
-FROM employees
+SELECT  COUNT(department_id)"부서 인원", ROUND(AVG(salary),0)"평균 급여", MAX(salary)"부서 최고 급여", SUM(salary)"부서 급여 합계"
+FROM employees 
 GROUP BY department_id
 HAVING department_id IS NOT NULL
 ORDER BY department_id;
+
+SELECT d.department_id, d.department_name,  e.department_id
+FROM employees e, departments d
+WHERE e.department_is =  d.department_id
+GROUP BY d.department_id, department_name, e.department_id
+ORDER BY department_id; -- 그룹+ 조인 왜안돼
 --문제21) EMPLOYEES 테이블에서 각 부서별로 인원수,급여의 평균, 최저 급여, 최고 급여, 급여의 합을 구하여 급여의 합이 많은 순으로 출력하여라. 
 SELECT department_id, COUNT(department_id)"부서 인원 수", ROUND(AVG(salary),0), MIN(salary), MAX(salary), SUM(salary)
 FROM employees
 GROUP BY department_id
 ORDER BY SUM(salary) DESC;
 --문제22) EMPLOYEES 테이블에서 부서별, 업무별 그룹하여 결과를 부서번호, 업 무, 인원수, 급여의 평균, 급여의 합을 구하여 출력하여라. 
-SELECT department_id, job_id, COUNT(department_id)"부서 인원 수", ROUND(AVG(salary)), SUM(salary) -- 어떤 그룹의 평균과 합계인지???
+SELECT department_id, job_id, COUNT(*)"부서 인원 수", ROUND(AVG(salary)), SUM(salary) -- 어떤 그룹의 평균과 합계인지???
 FROM employees
-GROUP BY department_id, job_id;
+GROUP BY department_id, job_id; -- department_id 로 묶고 나서 job_id로 묶었다. 마지막 결과값들은 마지막 job_id로 묶인 값들이 나오는 것이 맞다.
+
+SELECT *
+FROM employees
+WHERE department_id = 110; -- 확인
+
 --문제23) EMPLOYEES 테이블에서 부서 인원이 4명보다 많은 부서의 부서번호, 인원수, 급여의 합을 구하여 출력하여라.(GROUP BY, HAVING)
 SELECT department_id, COUNT(department_id), SUM(salary)
 FROM employees
 GROUP BY department_id
 HAVING COUNT(department_id) > 4;
+
 --문제24) EMPLOYEES 테이블에서 급여가 최대 10000이상인 부서에 대해서 부 서번호, 평균 급여, 급여의 합을 구하여 출력하여라.
 SELECT department_id, ROUND(AVG(salary)), SUM(salary)
 FROM employees
@@ -109,6 +121,13 @@ SELECT job_id, SUM(salary)
 FROM employees
 GROUP BY job_id
 HAVING SUM(salary) > 10000 AND job_id NOT LIKE 'SA_%'
+ORDER BY SUM(salary) DESC;
+
+SELECT SUM(salary), d.department_name
+FROM employees e, departments d
+WHERE e.employee_id = d.department_id 
+GROUP BY d.department_name
+HAVING SUM(salary) > 10000
 ORDER BY SUM(salary) DESC;
 --문제27) EMPLOYEES 테이블과 DEPARTMENTS 테이블을 Cartesian Product(모든 가능한 행들의 Join)하여 사원번호,이름,업무,부서번호,부서명, 근무지를 출력하여라. 
 
@@ -166,4 +185,7 @@ FROM emp
 WHERE LENGTH(ename) >= 6;
 --문제7) 모든 사원의 이름과 급여를 표시하시오. 급여는 15자 길이로 왼쪽에 $기호가 채워진 형식으로 표기하고 열레이블을 SALARY로 지정하시오.
 SELECT ename, sal, TO_CHAR(sal, '$999,999,999,999,999')"SALARY"
+FROM emp;
+
+SELECT ename, sal, LPAD(sal, 15, '$')AS SALARY -- 15자 길이로 만들고 $로 채워라
 FROM emp;
