@@ -1,4 +1,4 @@
--- VIEW
+-- OR REPLACE VIEW를 많이 사용함.
 --문제1) EMPLOYEES 테이블에서 20번 부서의 세부 사항을 포함하는 EMP_20 VIEW를 생성 하라 
 CREATE VIEW emp_20
 AS
@@ -16,21 +16,28 @@ CREATE VIEW emp_30 ("emp_no", "name", "sal")
 AS
 SELECT employee_id, last_name, salary
 FROM employees
-WHERE department_id = 30;
+WHERE department_id = 30; -- 3가지 column 만 가지고 왔기 때문에 추가나 수정이 불가능한 view 이다.
 
 SELECT *
 FROM emp_30;
 
 DROP VIEW emp_30;
 --문제3) 부서별로 부서명,최소 급여,최대 급여,부서의 평균 급여를 포함하는 DEPT_SUM VIEW을 생성하여라. 
-CREATE VIEW dept_sum("부서명", "최소 급여", "최대 급여", "부서의 평균 급여")
+CREATE OR REPLACE VIEW dept_sum("부서명", "최소 급여", "최대 급여", "부서의 평균 급여")
 AS
 SELECT DISTINCT d.department_name,
 MIN(e.salary)OVER(PARTITION BY e.department_id ),
 MAX(e.salary)OVER(PARTITION BY e.department_id ),
-ROUND(AVG(e.salary)OVER(PARTITION BY e.department_id), 2)
+ROUND(AVG(e.salary)OVER(PARTITION BY e.department_id))
 FROM employees e, departments d
 WHERE e.department_id = d.department_id;
+
+CREATE OR REPLACE VIEW dept_sum("부서명", "최소 급여", "최대 급여", "부서의 평균 급여")
+AS
+SELECT DISTINCT d.department_name, MIN(e.salary), MAX(e.salary),ROUND(AVG(e.salary))
+FROM employees e, departments d
+WHERE e.department_id = d.department_id
+GROUP BY d.department_name;
 
 SELECT *
 FROM dept_sum;
@@ -47,6 +54,8 @@ CREATE SEQUENCE test_seq
 INCREMENT BY 1 -- 증가 설정
 START WITH 1 -- 시작 숫자 설정
 MAXVALUE 999999 -- 최대 설정 (보통생략함.)
+NOCACHE -- 오라클서버가 미리 할당하고, 유지하는것을 결정
+NOCYCLE -- 최대값, 최소값에 도달한 후에 계속 값을 생성할지를 지정
 MINVALUE 1; -- 최소 설정 
 
 --문제2) 1번에서 작성한 SRQUENCE의 현재 값을 조회하여라.
