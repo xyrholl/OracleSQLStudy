@@ -1,0 +1,113 @@
+-- Standard function 쿼리문 기본 함수
+
+-- DUAL : 가상테이블 - 결과확인용 임시 테이블
+SELECT 1 FROM DUAL; -- 1 
+SELECT 'A' FROM DUAL;
+SELECT '가' FROM DUAL;
+SELECT 32*24 FROM DUAL;
+
+-- 문자합수
+-- CHR(N) : ASCII 값을 문자로 변환 하는 함수
+SELECT CHR(65) FROM DUAL; -- A
+SELECT CHR(97) FROM DUAL; -- a
+
+-- 내점수는 A 입니다.
+SELECT '내 점수는 ' || CHR(65) || '입니다' FROM DUAL; -- 두가지 컬럼을 연결할때 사용하는것 ||
+-- JAVA "내 점수는 " + CHR(65) + "입니다"
+
+--LPAD(RPAD) : 나머지를 빈칸(특정문자)으로 채운다
+
+SELECT LPAD('BBB', 10) FROM DUAL;
+SELECT RPAD('BBB', 10) FROM DUAL;
+SELECT LPAD('BBB', 10, '7') FROM DUAL;
+
+-- INSTR == INDEXOF('a') java는 0부터 시작하만 DATABASE는 1부터 시작한다
+
+SELECT INSTR('123A456B678C', 'A') FROM DUAL; -- 4번째에 A 가 있다.
+SELECT INSTR('123A456B678CB', 'B', 8) FROM DUAL; -- 8번째 부터 B를 찾아라.
+SELECT INSTR('123A456B678CB', 'B', 4, 1) FROM DUAL; -- 4번째부터 시작해서 첫번째 B를 찾아라 == 8
+SELECT INSTR('123A456B678CB', 'B', 4, 2) FROM DUAL; -- 4번째부터 시작해서 두번째 B를 찾아라 == 13
+
+ -- REPLACE: 문자열 치관함수  
+ SELECT REPLACE('AAAAABCD', 'A') FROM DUAL; --A를 빈공간으로 치환해라
+ SELECT REPLACE('AAAAABCD', 'A', 'a') FROM DUAL; --A를 빈공간으로 치환해라
+ SELECT REPLACE('AAAAABCD', 'AB', 'a') FROM DUAL; --A를 빈공간으로 치환해라
+ SELECT REPLACE('AAAAABCD', 'AA', 'a') FROM DUAL; 
+ 
+ -- TRANSLATE : 문자 치환
+ SELECT TRANSLATE ( 'AAAAABCD', 'A', 'a') FROM DUAL; -- aaaaaBCD 
+ SELECT TRANSLATE ( 'AAAAABCD', 'AB', 'a') FROM DUAL; -- aaaaaCD
+ SELECT TRANSLATE ( 'AAAAABCD', 'AA', 'a') FROM DUAL; -- aaaaaBCD
+ 
+ -- 숫자함수 올림
+ SELECT CEIL(13.1) FROM DUAL; -- result 14
+ 
+ -- 숫자함수 내림
+ SELECT FLOOR(13.9) FROM DUAL;
+ 
+ -- 나눈 나머지
+ SELECT MOD(3, 2) FROM DUAL; -- 
+ 
+ -- 승수
+ SELECT POWER(3, 2) FROM DUAL;
+ 
+ -- 반올림
+ SELECT ROUND(13.5) From DUAL;
+ SELECT ROUND(13.4) From DUAL;
+ 
+ -- 부호 
+ SELECT SIGN(13.4) FROM DUAL;
+ SELECT SIGN(0) FROM DUAL;
+ SELECT SIGN(-3.4) FROM DUAL;
+ 
+ -- 버림
+ SELECT TRUNC(12.3456) FROM DUAL;
+ SELECT TRUNC(12.3456, 2) FROM DUAL; --
+ SELECT TRUNC(12.3456, -1) FROM DUAL; -- 10 이 출력됨.
+ 
+ -- 아스키 코드값 반환 CHR 함수와 정반대
+ SELECT ASCII('A') FROM DUAL;
+ 
+ -- 변환 함수 DATE -> STRING 아주 중요함.
+ -- 문자가 아니라 숫자가 나감.
+ SELECT TO_CHAR(SYSDATE)
+ FROM DUAL;
+ 
+ SELECT TO_CHAR(SYSDATE, 'YYYY-MM-DD-HH-MI-SS')
+ FROM DUAL;
+ 
+  SELECT TO_CHAR(100000000000, '$999,999,999,999')
+ FROM DUAL;
+ 
+ -- TO_DATE
+ -- 문자를 숫자로 변형하는것을 TO_BATE  gn
+ SELECT TO_DATE('20191225')
+ FROM DUAL;
+ SELECT TO_DATE('20191225', 'YYYYMMDD')
+ FROM DUAL;
+ 
+ SELECT TO_DATE('12252019', 'MMDDYYYY')
+ FROM DUAL;
+ 
+ -- TO_NUMBER -> parseInt
+ SELECT TO_NUMBER('112') + 24
+ FROM DUAL; -- result 136
+ 
+ -- LAST_DAY
+ SELECT LAST_DAY('19/11/01')
+ FROM DUAL;
+ 
+SELECT LAST_DAY(TO_DATE('20191101', 'YYYYMMDD'))
+ FROM DUAL;
+ 
+ -- SUBSTR JAVA subString(1,3) "ABCD" -> BC
+ SELECT SUBSTR('ABCDE', 3)
+ FROM DUAL; -- 3번째 부터 다 출력해라.
+ 
+ SELECT SUBSTR('ABCDE', 3,2)
+ FROM DUAL; -- 3번째 부터 2개의 문자까지
+ 
+ -- LENGTHB -> 문자의 길이 BYTE 형식
+ -- LENGTH -> 문자길이
+ SELECT LENGTH('ABCDE') FROM DUAL;
+ SELECT LENGTHB('ABCDE') FROM DUAL;
