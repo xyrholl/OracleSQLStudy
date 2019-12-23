@@ -162,10 +162,6 @@
 
 --** hr 계정 **--
 -- 문제1) employees 와 departments 테이블에서 업무가 세일즈맨 사원의 정보를 이름, 업무, 부서명, 근무지를 출력하여라
-SELECT e.last_name, job_id, d.department_name, d.location_id
-FROM employees e, departments d
-WHERE e.department_id = d.department_id
-AND job_id = 'SA_MAN';
 
 -- 문제2) employees 테이블에서 가장 많은 사원을 갖는 manager의 사원번호를 출력하여라.
 
